@@ -74,20 +74,36 @@ export default function ProductCard({ product }: ProductCardProps) {
           overflow: "hidden",
         }}
       >
-        {/* Placeholder image with tool silhouette */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "64px",
-            opacity: 0.15,
-          }}
-        >
-          🔧
-        </div>
+        {/* Product image or fallback wrench */}
+        {product.images && product.images.length > 0 && product.images[0] ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={product.images[0]}
+            alt={product.name}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              padding: "16px",
+              position: "relative",
+              zIndex: 1,
+            }}
+          />
+        ) : (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "64px",
+              opacity: 0.15,
+            }}
+          >
+            🔧
+          </div>
+        )}
 
         {/* Brand badge */}
         <div

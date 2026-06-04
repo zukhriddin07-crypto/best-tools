@@ -187,7 +187,23 @@ export default async function ProductPage({ params }: Props) {
               </div>
             )}
 
-            <div style={{ fontSize: "120px", opacity: 0.2 }}>🔧</div>
+            {product.images && product.images.length > 0 && product.images[0] ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={product.images[0]}
+                alt={product.name}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                  padding: "24px",
+                  position: "relative",
+                  zIndex: 1,
+                }}
+              />
+            ) : (
+              <div style={{ fontSize: "120px", opacity: 0.2 }}>🔧</div>
+            )}
 
             <div
               style={{
@@ -201,28 +217,39 @@ export default async function ProductPage({ params }: Props) {
           </div>
 
           {/* Thumbnails */}
-          <div style={{ display: "flex", gap: "8px" }}>
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                style={{
-                  flex: 1,
-                  aspectRatio: "1 / 1",
-                  background: "#111111",
-                  border: i === 1 ? "2px solid #facc15" : "1px solid #1a1a1a",
-                  borderRadius: "8px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "24px",
-                  opacity: i === 1 ? 0.3 : 0.1,
-                  cursor: "pointer",
-                }}
-              >
-                🔧
-              </div>
-            ))}
-          </div>
+          {product.images && product.images.length > 0 && (
+            <div style={{ display: "flex", gap: "8px" }}>
+              {product.images.map((img, i) => (
+                <div
+                  key={i}
+                  style={{
+                    width: "80px",
+                    height: "80px",
+                    background: "#111111",
+                    border: i === 0 ? "2px solid #facc15" : "1px solid #1a1a1a",
+                    borderRadius: "8px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    overflow: "hidden",
+                    padding: "6px",
+                  }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={img}
+                    alt={`${product.name} thumbnail ${i + 1}`}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Right: Details */}

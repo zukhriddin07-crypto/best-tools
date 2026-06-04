@@ -1,15 +1,23 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { mockProducts } from "@/lib/mock-data";
 import { useLanguage } from "@/lib/language-context";
 import ProductCard from "./ProductCard";
 
 export default function FeaturedProducts() {
   const { t } = useLanguage();
-  const featured = mockProducts.filter((p) => p.isFeatured);
+  const [products, setProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("/api/products")
+      .then((res) => res.json())
+      .then((data) => setProducts(data))
+      .catch((err) => console.error("Error fetching products:", err));
+  }, []);
+
+  const featured = products.filter((p) => p.isFeatured);
 
   return (
     <section style={{ padding: "60px 0", background: "#0a0a0a" }}>

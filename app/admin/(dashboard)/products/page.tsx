@@ -27,16 +27,32 @@ export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
-  const [products, setProducts] = useState(
-    mockProducts.map((p) => ({ ...p, isActive: true }))
-  );
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/products");
+      const data = await res.json();
+      setProducts(data);
+    } catch (err) {
+      console.error("Failed to fetch products:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const filtered = products.filter((p) => {
     const matchSearch =
       p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.sku.toLowerCase().includes(searchQuery.toLowerCase());
     const matchBrand =
-      selectedBrand === "all" || p.brand.slug === selectedBrand;
+      selectedBrand === "all" || p.brand?.slug === selectedBrand;
     const matchStatus =
       selectedStatus === "all" ||
       (selectedStatus === "active" && p.isActive) ||
@@ -44,15 +60,45 @@ export default function ProductsPage() {
     return matchSearch && matchBrand && matchStatus;
   });
 
-  const toggleActive = (id: string) => {
-    setProducts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, isActive: !p.isActive } : p))
-    );
+  const toggleActive = async (id: string) => {
+    const product = products.find((p) => p.id === id);
+    if (!product) return;
+    try {
+      const updatedStatus = !product.isActive;
+      // Optimistic UI update
+      setProducts((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, isActive: updatedStatus } : p))
+      );
+
+      const res = await fetch(`/api/products/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...product,
+          isActive: updatedStatus,
+          brandId: product.brandId || product.brand?.id || "1",
+          categoryId: product.categoryId || product.category?.id || "1",
+        }),
+      });
+      if (!res.ok) throw new Error("Toggle status failed");
+    } catch (err) {
+      alert("Holatni o'zgartirishda xatolik yuz berdi");
+      fetchProducts();
+    }
   };
 
-  const deleteProduct = (id: string) => {
+  const deleteProduct = async (id: string) => {
     if (confirm("Mahsulotni o'chirishni tasdiqlaysizmi?")) {
-      setProducts((prev) => prev.filter((p) => p.id !== id));
+      try {
+        setProducts((prev) => prev.filter((p) => p.id !== id));
+        const res = await fetch(`/api/products/${id}`, {
+          method: "DELETE",
+        });
+        if (!res.ok) throw new Error("Delete failed");
+      } catch (err) {
+        alert("Mahsulotni o'chirishda xatolik yuz berdi");
+        fetchProducts();
+      }
     }
   };
 

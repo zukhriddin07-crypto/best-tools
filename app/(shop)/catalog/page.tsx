@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { SlidersHorizontal, ChevronDown } from "lucide-react";
 import { mockProducts, mockBrands, mockCategories } from "@/lib/mock-data";
 import ProductCard from "@/components/shop/ProductCard";
+import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
   title: "Katalog — Barcha Mahsulotlar",
@@ -10,7 +11,26 @@ export const metadata: Metadata = {
     "Professional elektr asboblar katalogi. Drellar, perforatorlar, arra mashinalar, silliqlash mashinalari. Bosch, Milwaukee, DeWalt, Makita.",
 };
 
-export default function CatalogPage() {
+export default async function CatalogPage() {
+  let products: any[] = [];
+  try {
+    products = await prisma.product.findMany({
+      include: {
+        brand: true,
+        category: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    if (products.length === 0) {
+      products = mockProducts as any[];
+    }
+  } catch (err) {
+    console.error("Prisma products fetch failed, falling back to mockProducts:", err);
+    products = mockProducts as any[];
+  }
+
   return (
     <div className="container-main" style={{ paddingTop: "32px", paddingBottom: "60px" }}>
       {/* Breadcrumb */}
@@ -236,7 +256,7 @@ export default function CatalogPage() {
                   marginLeft: "10px",
                 }}
               >
-                ({mockProducts.length} ta)
+                ({products.length} ta)
               </span>
             </h1>
 
@@ -283,7 +303,7 @@ export default function CatalogPage() {
               gap: "16px",
             }}
           >
-            {mockProducts.map((product) => (
+            {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>

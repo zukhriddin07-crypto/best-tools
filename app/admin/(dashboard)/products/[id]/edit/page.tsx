@@ -192,10 +192,26 @@ export default function EditProductPage({ params }: EditProductPageProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // TODO: PUT /api/admin/products/[id]
-    await new Promise((r) => setTimeout(r, 1500));
-    setIsSubmitting(false);
-    router.push("/admin/products");
+    try {
+      const res = await fetch(`/api/products/${productId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          specs,
+          images,
+        }),
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Mahsulotni tahrirlab bo'lmadi");
+      }
+      router.push("/admin/products");
+    } catch (err: any) {
+      alert(err.message || "Mahsulotni saqlashda xatolik yuz berdi");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const inputStyle: React.CSSProperties = {

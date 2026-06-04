@@ -154,10 +154,26 @@ export default function NewProductPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // TODO: POST /api/admin/products
-    await new Promise((r) => setTimeout(r, 1500));
-    setIsSubmitting(false);
-    router.push("/admin/products");
+    try {
+      const res = await fetch("/api/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          specs,
+          images,
+        }),
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Mahsulot qo'shib bo'lmadi");
+      }
+      router.push("/admin/products");
+    } catch (err: any) {
+      alert(err.message || "Mahsulotni saqlashda xatolik yuz berdi");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Input style helper

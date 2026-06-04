@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import { Star, ChevronRight } from "lucide-react";
 import { mockProducts, mockCategories, formatPrice, calculateDiscount } from "@/lib/mock-data";
+import { prisma } from "@/lib/prisma";
 import { translations } from "@/lib/translations";
 import ProductCard from "@/components/shop/ProductCard";
 import ProductActions from "@/components/shop/ProductActions";
@@ -28,7 +29,18 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = mockProducts.find((p) => p.slug === slug);
+  let product = null;
+  try {
+    product = await prisma.product.findUnique({
+      where: { slug },
+      include: { brand: true, category: true },
+    });
+  } catch {}
+  
+  if (!product) {
+    product = mockProducts.find((p) => p.slug === slug);
+  }
+  
   if (!product) return { title: "Mahsulot topilmadi" };
   const cookieStore = await cookies();
   const lang = cookieStore.get("language")?.value === "ru" ? "ru" : "uz";
@@ -47,7 +59,18 @@ export async function generateStaticParams() {
 
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
-  const product = mockProducts.find((p) => p.slug === slug);
+  let product = null;
+  try {
+    product = await prisma.product.findUnique({
+      where: { slug },
+      include: { brand: true, category: true },
+    });
+  } catch {}
+
+  if (!product) {
+    product = mockProducts.find((p) => p.slug === slug);
+  }
+  
   if (!product) notFound();
 
   const cookieStore = await cookies();
@@ -59,7 +82,7 @@ export default async function ProductPage({ params }: Props) {
   const productName = lang === "ru" && product.nameRu ? product.nameRu : product.name;
 
   const discount = product.oldPrice
-    ? calculateDiscount(product.price, product.oldPrice)
+    ? calculateDiscount(Number(product.price), Number(product.oldPrice))
     : null;
 
   const similar = mockProducts
@@ -301,8 +324,8 @@ export default async function ProductPage({ params }: Props) {
             sku={product.sku}
             slug={product.slug}
             image={product.images[0] || ""}
-            price={product.price}
-            oldPrice={product.oldPrice}
+            price={Number(product.price)}
+            oldPrice={product.oldPrice ? Number(product.oldPrice) : undefined}
             installmentAvailable={product.installmentAvailable}
             stock={product.stock}
             name={productName}

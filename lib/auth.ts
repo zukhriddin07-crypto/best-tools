@@ -12,6 +12,7 @@ const TEMP_ADMIN = {
 };
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,
   providers: [
     CredentialsProvider({
       name: "credentials",

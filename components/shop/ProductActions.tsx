@@ -4,6 +4,7 @@ import React from "react";
 import { ShoppingCart, Shield, Truck, Zap } from "lucide-react";
 import { formatPrice } from "@/lib/mock-data";
 import { useCart } from "@/lib/cart-context";
+import { useLanguage } from "@/lib/language-context";
 
 
 interface ProductActionsProps {
@@ -30,6 +31,7 @@ export default function ProductActions({
   name,
 }: ProductActionsProps) {
   const { addToCart } = useCart();
+  const { language, t } = useLanguage();
   const [isAdding, setIsAdding] = React.useState(false);
   const installmentMonths = [3, 6, 12];
 
@@ -63,14 +65,14 @@ export default function ProductActions({
             className="price-uzs"
             style={{ fontSize: "32px", fontWeight: 900, color: "#facc15" }}
           >
-            {formatPrice(price)}
+            {formatPrice(price, language)}
           </span>
           {oldPrice && (
             <span
               className="price-uzs"
               style={{ fontSize: "18px", color: "#4a4a4a", textDecoration: "line-through" }}
             >
-              {formatPrice(oldPrice)}
+              {formatPrice(oldPrice, language)}
             </span>
           )}
         </div>
@@ -89,7 +91,7 @@ export default function ProductActions({
               }}
             >
               <Zap size={12} style={{ color: "#facc15" }} />
-              Bo&#39;lib to&#39;lash (Uzum Nasiya)
+              {t("uzumNasiyaInstallment")}
             </div>
             <div style={{ display: "flex", gap: "8px" }}>
               {installmentMonths.map((months) => (
@@ -114,13 +116,12 @@ export default function ProductActions({
                     e.currentTarget.style.background = "#1a1a1a";
                   }}
                 >
-                  <div style={{ fontSize: "11px", color: "#6b6b6b" }}>{months} oy</div>
+                  <div style={{ fontSize: "11px", color: "#6b6b6b" }}>{months} {t("months")}</div>
                   <div
                     className="price-uzs"
                     style={{ fontSize: "12px", fontWeight: 700, color: "#facc15" }}
                   >
-                    {Math.ceil(price / months).toLocaleString()}
-                    <span style={{ fontSize: "9px" }}> so&#39;m</span>
+                    {formatPrice(Math.ceil(price / months), language)}
                   </div>
                 </div>
               ))}
@@ -140,7 +141,7 @@ export default function ProductActions({
           }}
         />
         <span style={{ fontSize: "13px", color: "#a3a3a3" }}>
-          {stock > 5 ? "Mavjud" : stock > 0 ? `Faqat ${stock} ta qoldi` : "Tugagan"}
+          {stock > 5 ? t("inStock") : stock > 0 ? `${t("onlyLeftPrefix")}${stock} ${t("onlyLeft")}` : t("outOfStock")}
         </span>
       </div>
 
@@ -179,7 +180,7 @@ export default function ProductActions({
           }}
         >
           <ShoppingCart size={18} />
-          {isAdding ? "Qo'shildi ✓" : stock === 0 ? "Tugagan" : "Savatga"}
+          {isAdding ? t("added") : stock === 0 ? t("outOfStock") : t("addToCart")}
         </button>
 
         <button
@@ -207,15 +208,15 @@ export default function ProductActions({
             e.currentTarget.style.color = "#f5f5f5";
           }}
         >
-          Bir bosishda
+          {t("oneClick")}
         </button>
       </div>
 
       {/* Trust badges */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
         {[
-          { icon: Shield, text: "1 yil kafolat" },
-          { icon: Truck, text: "Tez yetkazib berish" },
+          { icon: Shield, text: t("warranty") },
+          { icon: Truck, text: t("fastDelivery") },
         ].map(({ icon: Icon, text }) => (
           <div
             key={text}

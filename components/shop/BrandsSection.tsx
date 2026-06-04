@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { mockBrands } from "@/lib/mock-data";
+import { useLanguage } from "@/lib/language-context";
 
 // Brand color map for visual identity
 const brandColors: Record<string, { bg: string; text: string; accent: string }> = {
@@ -42,6 +43,7 @@ function BrandLogo({ name, slug }: { name: string; slug: string }) {
 }
 
 export default function BrandsSection() {
+  const { language, t } = useLanguage();
   return (
     <section style={{ padding: "60px 0", borderBottom: "1px solid #1a1a1a" }}>
       <div className="container-main">
@@ -66,9 +68,9 @@ export default function BrandsSection() {
                 marginBottom: "8px",
               }}
             >
-              Ishonchli hamkorlar
+              {t("trustedPartners")}
             </span>
-            <h2 className="section-title">Premium Brendlar</h2>
+            <h2 className="section-title">{t("premiumBrands")}</h2>
           </div>
           <Link
             href="/catalog"
@@ -88,7 +90,7 @@ export default function BrandsSection() {
               (e.currentTarget as HTMLElement).style.gap = "6px";
             }}
           >
-            Barchasini ko&#39;rish
+            {t("viewAll")}
             <ArrowRight size={16} />
           </Link>
         </div>
@@ -171,7 +173,7 @@ export default function BrandsSection() {
                     {brand.name}
                   </div>
                   <div style={{ fontSize: "11px", color: "#6b6b6b" }}>
-                    {brand.description}
+                    {language === "ru" && (brand as any).descriptionRu ? (brand as any).descriptionRu : brand.description}
                   </div>
                 </div>
 
@@ -185,7 +187,7 @@ export default function BrandsSection() {
                     gap: "4px",
                   }}
                 >
-                  Ko&#39;rish <ArrowRight size={10} />
+                  {language === "ru" ? "Смотреть" : "Ko'rish"} <ArrowRight size={10} />
                 </div>
               </Link>
             );

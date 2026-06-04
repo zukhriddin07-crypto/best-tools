@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { mockCategories } from "@/lib/mock-data";
+import { useLanguage } from "@/lib/language-context";
 
 // Icon components for each category
 function CategoryIcon({ type }: { type: string }) {
@@ -32,6 +33,7 @@ const categoryGradients = [
 ];
 
 export default function CategoriesSection() {
+  const { language, t } = useLanguage();
   return (
     <section style={{ padding: "60px 0", background: "#090909" }}>
       <div className="container-main">
@@ -56,9 +58,9 @@ export default function CategoriesSection() {
                 marginBottom: "8px",
               }}
             >
-              Tanlash oson
+              {t("easyToChoose")}
             </span>
-            <h2 className="section-title">Kategoriyalar</h2>
+            <h2 className="section-title">{t("categories")}</h2>
           </div>
           <Link
             href="/catalog"
@@ -71,7 +73,7 @@ export default function CategoriesSection() {
               fontWeight: 600,
             }}
           >
-            Barchasini ko&#39;rish
+            {t("viewAll")}
             <ArrowRight size={16} />
           </Link>
         </div>
@@ -157,7 +159,7 @@ export default function CategoriesSection() {
                     lineHeight: 1.3,
                   }}
                 >
-                  {cat.name}
+                  {language === "ru" && cat.nameRu ? cat.nameRu : cat.name}
                 </div>
                 <div
                   style={{
@@ -165,7 +167,7 @@ export default function CategoriesSection() {
                     color: "#6b6b6b",
                   }}
                 >
-                  {cat.count} mahsulot
+                  {cat.count} {language === "ru" ? "товаров" : "mahsulot"}
                 </div>
               </div>
             </Link>

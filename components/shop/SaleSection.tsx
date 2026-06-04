@@ -4,10 +4,12 @@ import React from "react";
 import Link from "next/link";
 import { ArrowRight, Zap } from "lucide-react";
 import { mockProducts } from "@/lib/mock-data";
+import { useLanguage } from "@/lib/language-context";
 
 import ProductCard from "./ProductCard";
 
 export default function SaleSection() {
+  const { language, t } = useLanguage();
   // Products with oldPrice (discounted)
   const saleProducts = mockProducts.filter((p) => p.oldPrice != null);
 
@@ -45,10 +47,10 @@ export default function SaleSection() {
               }}
             >
               <Zap size={12} />
-              Chegirma
+              {t("discount")}
             </span>
             <h2 className="section-title">
-              Aksiya
+              {t("actions")}
               <span
                 style={{
                   marginLeft: "16px",
@@ -58,7 +60,7 @@ export default function SaleSection() {
                   fontVariantNumeric: "tabular-nums",
                 }}
               >
-                {saleProducts.length} ta mahsulot
+                {saleProducts.length} {language === "ru" ? "товаров" : "mahsulot"}
               </span>
             </h2>
           </div>
@@ -86,7 +88,7 @@ export default function SaleSection() {
               el.style.background = "rgba(250,204,21,0.1)";
             }}
           >
-            Barcha aksiyalar
+            {language === "ru" ? "Все акции" : "Barcha aksiyalar"}
             <ArrowRight size={14} />
           </Link>
         </div>

@@ -8,6 +8,7 @@ export const mockBrands = [
     slug: "bosch",
     logo: "/images/brands/bosch.svg",
     description: "Nemis sifati, professional sifat",
+    descriptionRu: "Немецкое качество, профессиональный инструмент",
   },
   {
     id: "2",
@@ -15,6 +16,7 @@ export const mockBrands = [
     slug: "milwaukee",
     logo: "/images/brands/milwaukee.svg",
     description: "Professional elektr asboblar",
+    descriptionRu: "Профессиональный электроинструмент премиум класса",
   },
   {
     id: "3",
@@ -22,6 +24,7 @@ export const mockBrands = [
     slug: "dewalt",
     logo: "/images/brands/dewalt.svg",
     description: "Qurilish professionals uchun",
+    descriptionRu: "Инструменты для настоящих профессионалов строительства",
   },
   {
     id: "4",
@@ -29,6 +32,7 @@ export const mockBrands = [
     slug: "makita",
     logo: "/images/brands/makita.svg",
     description: "Yaponiya sifati",
+    descriptionRu: "Настоящее японское качество и надежность",
   },
   {
     id: "5",
@@ -36,6 +40,7 @@ export const mockBrands = [
     slug: "hilti",
     logo: "/images/brands/hilti.svg",
     description: "Premium professional asboblar",
+    descriptionRu: "Профессиональные инструменты премиум-сегмента",
   },
   {
     id: "6",
@@ -43,6 +48,7 @@ export const mockBrands = [
     slug: "metabo",
     logo: "/images/brands/metabo.svg",
     description: "Ishonchli ishlab chiqaruvchi",
+    descriptionRu: "Надежный немецкий производитель оборудования",
   },
 ];
 
@@ -290,12 +296,13 @@ export const mockProducts = [
   },
 ];
 
-export const formatPrice = (price: number): string => {
-  return new Intl.NumberFormat("uz-UZ", {
+export const formatPrice = (price: number, lang: string = "uz"): string => {
+  const formatted = new Intl.NumberFormat(lang === "ru" ? "ru-RU" : "uz-UZ", {
     style: "decimal",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(price) + " so'm";
+  }).format(price);
+  return lang === "ru" ? `${formatted} сум` : `${formatted} so'm`;
 };
 
 export const calculateDiscount = (price: number, oldPrice: number): number => {

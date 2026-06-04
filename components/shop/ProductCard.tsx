@@ -224,7 +224,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 color: "#facc15",
               }}
             >
-              {formatPrice(product.price)}
+              {formatPrice(product.price, language)}
             </span>
             {product.oldPrice && (
               <span
@@ -235,7 +235,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                   textDecoration: "line-through",
                 }}
               >
-                {formatPrice(product.oldPrice)}
+                {formatPrice(product.oldPrice, language)}
               </span>
             )}
           </div>
@@ -254,9 +254,9 @@ export default function ProductCard({ product }: ProductCardProps) {
             >
               <Zap size={10} style={{ color: "#facc15" }} />
               {language === "ru" ? (
-                <>В рассрочку: {formatPrice(monthlyPrice)}/мес</>
+                <>В рассрочку: {formatPrice(monthlyPrice, language)}/мес</>
               ) : (
-                <>12 oyga: {formatPrice(monthlyPrice)}/oy</>
+                <>12 oyga: {formatPrice(monthlyPrice, language)}/oy</>
               )}
             </div>
           )}

@@ -4,9 +4,11 @@ import React, { useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Shield, Truck, Clock, Award } from "lucide-react";
+import { useLanguage } from "@/lib/language-context";
 
 export default function HeroBanner() {
   const statsRef = useRef<HTMLDivElement>(null);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const counters = statsRef.current?.querySelectorAll("[data-count]");
@@ -127,7 +129,7 @@ export default function HeroBanner() {
                 letterSpacing: "0.05em",
               }}
             >
-              O&#39;zbekistonda №1 professional asboblar
+              {t("badgeNo1")}
             </span>
           </div>
 
@@ -143,12 +145,12 @@ export default function HeroBanner() {
               animation: "fadeInUp 0.7s ease 0.1s both",
             }}
           >
-            Professional
+            {t("bannerHeading1")}
             <br />
-            <span className="text-gradient">Elektr Asboblar</span>
+            <span className="text-gradient">{t("bannerHeading2")}</span>
             <br />
             <span style={{ color: "#a3a3a3", fontWeight: 400, fontSize: "0.7em" }}>
-              Eng yaxshi brendlar
+              {t("bannerSubheading")}
             </span>
           </h1>
 
@@ -162,8 +164,7 @@ export default function HeroBanner() {
               animation: "fadeInUp 0.7s ease 0.2s both",
             }}
           >
-            Bosch, Milwaukee, DeWalt, Makita va boshqa premium brendlar.
-            Bo&#39;lib to&#39;lash, tez yetkazib berish va 1 yil kafolat bilan.
+            {t("bannerDesc")}
           </p>
 
           {/* CTA buttons */}
@@ -202,7 +203,7 @@ export default function HeroBanner() {
                 e.currentTarget.style.boxShadow = "none";
               }}
             >
-              Katalogni ko&#39;rish
+              {t("viewCatalog")}
               <ArrowRight size={18} />
             </Link>
             <Link
@@ -232,7 +233,7 @@ export default function HeroBanner() {
                 e.currentTarget.style.background = "transparent";
               }}
             >
-              Aksiyalar
+              {t("actions")}
             </Link>
           </div>
 
@@ -248,9 +249,9 @@ export default function HeroBanner() {
             }}
           >
             {[
-              { count: "1500", suffix: "+", label: "Mahsulot" },
-              { count: "8500", suffix: "+", label: "Mijoz" },
-              { count: "6", suffix: "", label: "Premium brend" },
+              { count: "1500", suffix: "+", label: t("statsProduct") },
+              { count: "8500", suffix: "+", label: t("statsCustomer") },
+              { count: "6", suffix: "", label: t("statsBrand") },
             ].map((stat) => (
               <div key={stat.label}>
                 <div
@@ -303,10 +304,10 @@ export default function HeroBanner() {
             }}
           >
             {[
-              { icon: Truck, title: "Tez yetkazib berish", desc: "Toshkent bo'yicha 1-2 soat" },
-              { icon: Shield, title: "Kafolat", desc: "Har bir mahsulotga 1 yil" },
-              { icon: Clock, title: "Muddatli to'lov", desc: "3/6/12 oygacha" },
-              { icon: Award, title: "Original mahsulot", desc: "Rasmiy distribyutor" },
+              { icon: Truck, title: t("fastDelivery"), desc: t("deliveryInfo") },
+              { icon: Shield, title: t("cart") !== "Savat" ? "Гарантия" : "Kafolat", desc: t("warrantyInfo") },
+              { icon: Clock, title: t("uzumNasiyaInstallment").split(" ")[0] === "Bo'lib" ? "Muddatli to'lov" : "Рассрочка", desc: t("installmentInfo") },
+              { icon: Award, title: t("originalProductInfo").split(" ")[0] === "Rasmiy" ? "Original mahsulot" : "Оригинальный товар", desc: t("originalProductInfo") },
             ].map((item) => (
               <div
                 key={item.title}

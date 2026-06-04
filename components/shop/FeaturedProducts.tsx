@@ -4,9 +4,11 @@ import React from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { mockProducts } from "@/lib/mock-data";
+import { useLanguage } from "@/lib/language-context";
 import ProductCard from "./ProductCard";
 
 export default function FeaturedProducts() {
+  const { t } = useLanguage();
   const featured = mockProducts.filter((p) => p.isFeatured);
 
   return (
@@ -33,9 +35,9 @@ export default function FeaturedProducts() {
                 marginBottom: "8px",
               }}
             >
-              Eng yaxshi tanlov
+              {t("bestChoice")}
             </span>
-            <h2 className="section-title">Tanlangan Mahsulotlar</h2>
+            <h2 className="section-title">{t("featuredProducts")}</h2>
           </div>
           <Link
             href="/catalog?featured=true"
@@ -48,7 +50,7 @@ export default function FeaturedProducts() {
               fontWeight: 600,
             }}
           >
-            Hammasi
+            {t("all")}
             <ArrowRight size={16} />
           </Link>
         </div>

@@ -360,19 +360,6 @@ export default async function ProductPage({ params }: Props) {
             name={productName}
           />
 
-          {/* Description */}
-          <p
-            style={{
-              color: "#a3a3a3",
-              fontSize: "15px",
-              lineHeight: 1.6,
-              whiteSpace: "pre-line",
-            }}
-          >
-            {lang === "ru" && (product as any).descriptionRu
-              ? (product as any).descriptionRu
-              : ((product as any).description || product.shortDesc)}
-          </p>
 
         </div>
       </div>
@@ -434,6 +421,40 @@ export default async function ProductPage({ params }: Props) {
                   </span>
                 </div>
               ))}
+          </div>
+        </div>
+      )}
+
+      {/* Description */}
+      {((product as any).description || product.shortDesc) && (
+        <div style={{ marginBottom: "60px" }}>
+          <h2
+            className="section-title"
+            style={{ marginBottom: "24px", fontSize: "22px" }}
+          >
+            {lang === "ru" ? "Описание" : "Tavsif"}
+          </h2>
+          <div
+            style={{
+              background: "#111111",
+              border: "1px solid #1a1a1a",
+              borderRadius: "12px",
+              padding: "28px 32px",
+            }}
+          >
+            <p
+              style={{
+                color: "#a3a3a3",
+                fontSize: "15px",
+                lineHeight: 1.8,
+                whiteSpace: "pre-line",
+                margin: 0,
+              }}
+            >
+              {lang === "ru" && (product as any).descriptionRu
+                ? (product as any).descriptionRu
+                : ((product as any).description || product.shortDesc)}
+            </p>
           </div>
         </div>
       )}

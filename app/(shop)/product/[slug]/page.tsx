@@ -10,17 +10,33 @@ import ProductCard from "@/components/shop/ProductCard";
 import ProductActions from "@/components/shop/ProductActions";
 
 const specLabels: Record<string, { uz: string; ru: string }> = {
+  // English keys
   voltage: { uz: "akkumulyator kuchlanishi", ru: "напряжение аккумулятора" },
   power: { uz: "quvvati", ru: "мощность" },
   weight: { uz: "og'irligi", ru: "вес" },
   speed: { uz: "aylanishlar soni", ru: "число оборотов" },
   torque: { uz: "maksimal aylanuvchi moment", ru: "крутящий момент" },
+  drillcapacity: { uz: "burg'ulash diametri", ru: "диаметр сверления" },
   drillCapacity: { uz: "burg'ulash diametri", ru: "диаметр сверления" },
   disk: { uz: "disk diametri", ru: "диаметр диска" },
   energy: { uz: "zarba quvvati", ru: "энергия удара" },
   clutch: { uz: "patron", ru: "патрон" },
   blade: { uz: "arra diski", ru: "пильный диск" },
   depth: { uz: "kesish chuqurligi", ru: "глубина пропила" },
+
+  // Russian keys
+  "напряжение аккумулятора": { uz: "akkumulyator kuchlanishi", ru: "напряжение аккумулятора" },
+  "мощность": { uz: "quvvati", ru: "мощность" },
+  "мощность ": { uz: "quvvati", ru: "мощность" },
+  "вес": { uz: "og'irligi", ru: "вес" },
+  "число оборотов": { uz: "aylanishlar soni", ru: "число оборотов" },
+  "крутящий момент": { uz: "maksimal aylanuvchi moment", ru: "крутящий момент" },
+  "диаметр сверления": { uz: "burg'ulash diametri", ru: "диаметр сверления" },
+  "диаметр диска": { uz: "disk diametri", ru: "диаметр диска" },
+  "энергия удара": { uz: "zarba quvvati", ru: "энергия удара" },
+  "патрон": { uz: "patron", ru: "патрон" },
+  "пильный диск": { uz: "arra diski", ru: "пильный диск" },
+  "глубина пропила": { uz: "kesish chuqurligi", ru: "глубина пропила" },
 };
 
 interface Props {
@@ -405,7 +421,7 @@ export default async function ProductPage({ params }: Props) {
                       flexShrink: 0,
                     }}
                   >
-                    {specLabels[key]?.[lang] || key}
+                    {specLabels[key.trim().toLowerCase()]?.[lang] || specLabels[key]?.[lang] || key}
                   </span>
                   <span
                     style={{

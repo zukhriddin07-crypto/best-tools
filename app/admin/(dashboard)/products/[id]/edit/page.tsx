@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useRef, use } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useRef, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 import {
   Upload,
   X,
@@ -20,78 +20,172 @@ interface SpecRow {
   value: string;
 }
 
-interface EditProductPageProps {
-  params: Promise<{ id: string }>;
-}
-
-export default function EditProductPage({ params }: EditProductPageProps) {
+export default function EditProductPage() {
   const router = useRouter();
+  const params = useParams();
+  const productId = params?.id as string;
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const resolvedParams = use(params);
-  const productId = resolvedParams.id;
-
-  const product = mockProducts.find((p) => p.id === productId);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [aiSuccess, setAiSuccess] = useState(false);
+  const [isLoadingProduct, setIsLoadingProduct] = useState(true);
+  const [errorProduct, setErrorProduct] = useState<string | null>(null);
 
-  // Initialize form state
   const [form, setForm] = useState({
-    name: product?.name || "",
-    nameRu: product?.nameRu || "",
-    sku: product?.sku || "",
-    slug: product?.slug || "",
-    brandId: mockBrands.find((b) => b.slug === product?.brand?.slug)?.id || "",
-    categoryId: mockCategories.find((c) => c.slug === product?.category?.slug)?.id || "",
-    price: product?.price ? String(product.price) : "",
-    oldPrice: product?.oldPrice ? String(product.oldPrice) : "",
-    stock: product?.stock ? String(product.stock) : "",
-    shortDesc: product?.shortDesc || "",
-    description: "", // mock products don't have descriptions, so start empty
+    name: "",
+    nameRu: "",
+    sku: "",
+    slug: "",
+    brandId: "",
+    categoryId: "",
+    price: "",
+    oldPrice: "",
+    stock: "",
+    shortDesc: "",
+    description: "",
     descriptionRu: "",
     metaTitle: "",
     metaDescription: "",
     isActive: true,
-    isFeatured: product?.isFeatured || false,
-    installmentAvailable: product?.installmentAvailable !== false,
+    isFeatured: false,
+    installmentAvailable: true,
   });
 
-  const [specs, setSpecs] = useState<SpecRow[]>(
-    product?.specs
-      ? Object.entries(product.specs).map(([key, value]) => ({
-          key,
-          value: String(value),
-        }))
-      : [
-          { key: "voltage", value: "" },
-          { key: "power", value: "" },
-        ]
-  );
+  const [specs, setSpecs] = useState<SpecRow[]>([
+    { key: "voltage", value: "" },
+    { key: "power", value: "" },
+  ]);
 
-  const [images, setImages] = useState<string[]>(product?.images || []);
+  const [images, setImages] = useState<string[]>([]);
   const [dragOver, setDragOver] = useState(false);
 
-  if (!product) {
+  useEffect(() => {
+    if (!productId) return;
+
+    async function loadProduct() {
+      try {
+        setIsLoadingProduct(true);
+        setErrorProduct(null);
+        const res = await fetch(`/api/products/${productId}`);
+        let data;
+        if (!res.ok) {
+          // Try to get the actual error from the API response
+          let apiError = `HTTP ${res.status}`;
+          try {
+            const errJson = await res.json();
+            apiError = errJson.error || apiError;
+          } catch {}
+          // fallback to mock data
+          const fallback = mockProducts.find((p) => p.id === productId);
+          if (!fallback) {
+            throw new Error(`Mahsulot topilmadi (${apiError})`);
+          }
+          data = {
+            ...fallback,
+            brandId: mockBrands.find((b) => b.slug === fallback.brand?.slug)?.id || "",
+            categoryId: mockCategories.find((c) => c.slug === fallback.category?.slug)?.id || "",
+          };
+        } else {
+          data = await res.json();
+        }
+
+        // Find brand ID and category ID by matching slug or id
+        const brandId = mockBrands.find((b) => b.slug === data.brand?.slug || b.id === data.brandId)?.id || data.brandId || "";
+        const categoryId = mockCategories.find((c) => c.slug === data.category?.slug || c.id === data.categoryId)?.id || data.categoryId || "";
+
+        setForm({
+          name: data.name || "",
+          nameRu: data.nameRu || "",
+          sku: data.sku || data.id || "",
+          slug: data.slug || "",
+          brandId: brandId,
+          categoryId: categoryId,
+          price: data.price ? String(data.price) : "",
+          oldPrice: data.oldPrice ? String(data.oldPrice) : "",
+          stock: data.stock !== undefined ? String(data.stock) : "0",
+          shortDesc: data.shortDesc || "",
+          description: data.description || "",
+          descriptionRu: data.descriptionRu || "",
+          metaTitle: data.metaTitle || "",
+          metaDescription: data.metaDescription || "",
+          isActive: data.isActive !== false,
+          isFeatured: data.isFeatured || false,
+          installmentAvailable: data.installmentAvailable !== false,
+        });
+
+        if (data.specs && typeof data.specs === "object") {
+          const specEntries = Object.entries(data.specs);
+          if (specEntries.length > 0) {
+            setSpecs(
+              specEntries.map(([key, value]) => ({
+                key,
+                value: String(value),
+              }))
+            );
+          }
+        }
+
+        setImages(data.images || []);
+      } catch (err: any) {
+        console.error("Error loading product:", err);
+        setErrorProduct(err.message || "Mahsulotni yuklashda xatolik yuz berdi");
+      } finally {
+        setIsLoadingProduct(false);
+      }
+    }
+
+    loadProduct();
+  }, [productId]);
+
+  if (isLoadingProduct) {
+    return (
+      <div style={{ padding: "80px", textAlign: "center", color: "#f5f5f5" }}>
+        <Loader2 size={36} style={{ animation: "spin 1s linear infinite", margin: "0 auto 16px" }} />
+        <p style={{ fontSize: "14px", color: "#a3a3a3" }}>Mahsulot ma&#39;lumotlari yuklanmoqda...</p>
+        <p style={{ fontSize: "12px", color: "#4a4a4a", marginTop: "8px" }}>ID: {productId}</p>
+      </div>
+    );
+  }
+
+  if (errorProduct) {
     return (
       <div style={{ padding: "40px", textAlign: "center", color: "#f5f5f5" }}>
-        <h1 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "16px" }}>
-          Mahsulot topilmadi
+        <h1 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "8px", color: "#ef4444" }}>
+          Xatolik
         </h1>
-        <button
-          onClick={() => router.push("/admin/products")}
-          style={{
-            background: "#facc15",
-            color: "#0a0a0a",
-            fontWeight: 700,
-            padding: "10px 20px",
-            borderRadius: "8px",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
-          Mahsulotlar ro'yxatiga qaytish
-        </button>
+        <p style={{ fontSize: "14px", color: "#a3a3a3", marginBottom: "8px" }}>{errorProduct}</p>
+        <p style={{ fontSize: "11px", color: "#4a4a4a", marginBottom: "20px" }}>ID: {productId}</p>
+        <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
+          <button
+            onClick={() => window.location.reload()}
+            style={{
+              background: "#1a1a1a",
+              color: "#f5f5f5",
+              fontWeight: 700,
+              padding: "10px 20px",
+              borderRadius: "8px",
+              border: "1px solid #2a2a2a",
+              cursor: "pointer",
+            }}
+          >
+            Qayta urinish
+          </button>
+          <button
+            onClick={() => router.push("/admin/products")}
+            style={{
+              background: "#facc15",
+              color: "#0a0a0a",
+              fontWeight: 700,
+              padding: "10px 20px",
+              borderRadius: "8px",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            Mahsulotlar ro&#39;yxatiga qaytish
+          </button>
+        </div>
       </div>
     );
   }
@@ -278,7 +372,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
             Mahsulotni tahrirlash
           </h1>
           <p style={{ fontSize: "12px", color: "#6b6b6b" }}>
-            ID: {product.id} · SKU: {product.sku}
+            ID: {productId} · SKU: {form.sku}
           </p>
         </div>
 

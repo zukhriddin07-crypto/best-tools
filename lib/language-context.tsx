@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { translations } from "./translations";
 
 export type Language = "uz" | "ru";
@@ -17,6 +18,7 @@ const LanguageContext = createContext<LanguageContextProps | undefined>(undefine
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>("uz");
   const [isMounted, setIsMounted] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const savedLang = localStorage.getItem("language") as Language;
@@ -36,6 +38,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       document.documentElement.lang = lang;
       document.cookie = `language=${lang}; path=/; max-age=31536000; SameSite=Lax`;
     }
+    router.refresh();
   };
 
   const t = (key: keyof typeof translations["uz"]): string => {

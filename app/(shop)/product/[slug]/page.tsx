@@ -347,6 +347,19 @@ export default async function ProductPage({ params }: Props) {
             </div>
           </div>
 
+          {/* Interactive actions (client component) */}
+          <ProductActions
+            id={product.id}
+            sku={product.sku}
+            slug={product.slug}
+            image={product.images[0] || ""}
+            price={Number(product.price)}
+            oldPrice={product.oldPrice ? Number(product.oldPrice) : undefined}
+            installmentAvailable={product.installmentAvailable}
+            stock={product.stock}
+            name={productName}
+          />
+
           {/* Description */}
           <p
             style={{
@@ -360,19 +373,6 @@ export default async function ProductPage({ params }: Props) {
               ? (product as any).descriptionRu
               : ((product as any).description || product.shortDesc)}
           </p>
-
-          {/* Interactive actions (client component) */}
-          <ProductActions
-            id={product.id}
-            sku={product.sku}
-            slug={product.slug}
-            image={product.images[0] || ""}
-            price={Number(product.price)}
-            oldPrice={product.oldPrice ? Number(product.oldPrice) : undefined}
-            installmentAvailable={product.installmentAvailable}
-            stock={product.stock}
-            name={productName}
-          />
 
         </div>
       </div>
